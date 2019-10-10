@@ -1,0 +1,57 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                    xmlns:ViewModels="clr-namespace:UsrControl.ViewModels"
+                     xmlns:local="clr-namespace:UsrControl.Views"
+                     xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"    
+                    >
+
+    <telerik:StringToGlyphConverter x:Key="StringToGlyphConverter"/>
+    <Style TargetType="{x:Type Border}" x:Key="alert" >
+        <Setter Property="Padding" Value="10"/>
+        <Setter Property="Margin" Value="0 0 0 10"/>
+    </Style>
+    <Style TargetType="{x:Type Border}" x:Key="alert-danger" BasedOn="{StaticResource alert}" >
+        <Setter Property="Background" Value="#f2dede"/>
+        <Setter Property="BorderBrush" Value="#ebccd1"/>
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+
+    <Style TargetType="{x:Type Border}" x:Key="alert-success" BasedOn="{StaticResource alert}" >
+        <Setter Property="Background" Value="#dff0d8"/>
+        <Setter Property="BorderBrush" Value="#d6e9c6"/>
+        <Setter Property="BorderThickness" Value="1"/>        
+    </Style>
+
+
+    <DataTemplate x:Key="error"   >
+        <Border Style="{StaticResource alert-danger}" DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Main}}}"  >
+            <StackPanel Orientation="Horizontal" DataContext="{Binding FlashData,Mode=TwoWay}">
+
+                
+                <TextBlock Text="{Binding Message}"   Foreground="#a94442" >
+
+                </TextBlock>
+
+                <telerik:RadGlyph Glyph="&#xe11d;" HorizontalAlignment="Right"/>
+            </StackPanel>
+
+        </Border>
+
+    </DataTemplate>
+    <DataTemplate x:Key="success"  >
+        <Border Style="{StaticResource alert-success}" DataContext="{Binding Path=DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Main}}}">
+            <TextBlock Text="{Binding FlashData.Message}" Foreground="#3c763d"/>
+        </Border>
+
+    </DataTemplate>
+
+    <!--<DataTemplate x:Key="success"  >
+        <Border Style="{StaticResource alert-success}">
+            <TextBlock Text="{Binding FlashData.Message, Mode=TwoWay,RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ConfigViewModel}}}" Foreground="#3c763d"/>
+        </Border>
+
+    </DataTemplate>-->
+    
+
+</ResourceDictionary>
