@@ -4,17 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ModeloCI;
-
-namespace Demon.Libraries
+namespace MonitorCore.Libraries
 {
-    public class Settings
+    class Settings
     {
-        public Settings()
-        {
-        }
-
-
-        public static void Set(string slug,string val)
+        public static void Set(string slug, string val)
         {
 
         }
@@ -40,5 +34,5 @@ namespace Demon.Libraries
 
 
         }
-    }  
+    }
 }

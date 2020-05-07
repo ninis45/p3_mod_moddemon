@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2003
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Administrator", "Administrator\Administrator.csproj", "{D80CF5C4-648B-4FD4-8948-4DD273ED31AD}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demon", "Demon\Demon.csproj", "{877095AF-E59C-4A8D-8F8A-423394033887}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UsrControl", "UsrControl\UsrControl.csproj", "{E288B736-EF0C-4BDE-8400-77460922B457}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CIMonitor", "CIMonitor\CIMonitor.csproj", "{EA398AC0-B269-4EAD-9411-DD5192AA4B84}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinControl", "WinControl\WinControl.csproj", "{6BB38A94-2C04-4CEA-AD96-D47966C2C12F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonitorCore", "MonitorCore\MonitorCore.csproj", "{0DB2994B-22BE-4AB2-93BC-125B380D883C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonitorWin", "MonitorWin\MonitorWin.csproj", "{A4D0F878-F427-460C-920C-8B1593046315}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "CIMonitorInstaller", "CIMonitorInstaller\CIMonitorInstaller.vdproj", "{4262059B-197B-4641-843C-504F750BF39E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,22 +19,24 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D80CF5C4-648B-4FD4-8948-4DD273ED31AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D80CF5C4-648B-4FD4-8948-4DD273ED31AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D80CF5C4-648B-4FD4-8948-4DD273ED31AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D80CF5C4-648B-4FD4-8948-4DD273ED31AD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{877095AF-E59C-4A8D-8F8A-423394033887}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{877095AF-E59C-4A8D-8F8A-423394033887}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{877095AF-E59C-4A8D-8F8A-423394033887}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{877095AF-E59C-4A8D-8F8A-423394033887}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E288B736-EF0C-4BDE-8400-77460922B457}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E288B736-EF0C-4BDE-8400-77460922B457}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E288B736-EF0C-4BDE-8400-77460922B457}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E288B736-EF0C-4BDE-8400-77460922B457}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6BB38A94-2C04-4CEA-AD96-D47966C2C12F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6BB38A94-2C04-4CEA-AD96-D47966C2C12F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6BB38A94-2C04-4CEA-AD96-D47966C2C12F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6BB38A94-2C04-4CEA-AD96-D47966C2C12F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA398AC0-B269-4EAD-9411-DD5192AA4B84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA398AC0-B269-4EAD-9411-DD5192AA4B84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA398AC0-B269-4EAD-9411-DD5192AA4B84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA398AC0-B269-4EAD-9411-DD5192AA4B84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DB2994B-22BE-4AB2-93BC-125B380D883C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DB2994B-22BE-4AB2-93BC-125B380D883C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DB2994B-22BE-4AB2-93BC-125B380D883C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DB2994B-22BE-4AB2-93BC-125B380D883C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4D0F878-F427-460C-920C-8B1593046315}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4D0F878-F427-460C-920C-8B1593046315}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4D0F878-F427-460C-920C-8B1593046315}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4D0F878-F427-460C-920C-8B1593046315}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4262059B-197B-4641-843C-504F750BF39E}.Debug|Any CPU.ActiveCfg = Debug
+		{4262059B-197B-4641-843C-504F750BF39E}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
