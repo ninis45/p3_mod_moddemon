@@ -21,8 +21,7 @@ namespace MonitorWin.Forms
     public partial class FormConfiguracion : Form
     {
         private string NameProcess = "CIMonitor";
-        private Process[] ListProcess;
-        private bool Local;
+        private Process[] ListProcess;        
         private Libraries.LibConfig libConfig;
 
        

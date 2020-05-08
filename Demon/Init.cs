@@ -44,10 +44,10 @@ namespace Demon
         static void Main(string[] args)
         {
             System.Timers.Timer MTimer = new System.Timers.Timer(5000) { AutoReset = true };
-            //string location = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            string location = System.Reflection.Assembly.GetExecutingAssembly().Location;
 
-            //Console.WriteLine("Version "+ System.Diagnostics.FileVersionInfo.GetVersionInfo(location).FileVersion + " | Build: "+ System.Diagnostics.FileVersionInfo.GetVersionInfo(location).FileBuildPart);
-            //Console.WriteLine("=================================================================================");
+            Console.WriteLine("Version "+ System.Diagnostics.FileVersionInfo.GetVersionInfo(location).FileVersion + " | Build: "+ System.Diagnostics.FileVersionInfo.GetVersionInfo(location).FileBuildPart);
+            Console.WriteLine("=================================================================================");
             //Console.WriteLine("Environment: "+Libraries.Settings.Get("enviroment")+"\nSoftware version: "+Libraries.Settings.Get("prosper_version")+"\nMessages:"+ (Libraries.Settings.Get("show_messages")=="1"?"Y":"N")+"\nPROSPER: "+(Libraries.Settings.Get("open_prosper") == "1" ? "Y" : "N"));
             //Console.WriteLine("=================================================================================");
 
@@ -56,10 +56,15 @@ namespace Demon
 
             var intervalTimeSpan = new TimeSpan(0, 0, 0, 5,0);
 
-
-
-
-
+            Console.WriteLine("Tipo de conexion(1=Local,2=Remoto)?: ");
+            var local = Console.ReadLine();
+            string host = "";
+            if(local == "2")
+            {
+                Console.WriteLine("Host(Ejem. http://ejemplo.com/service.svc): ");
+                host = Console.ReadLine();
+            }
+            
             //Task Timer = TimerTask(intervalTimeSpan, cancellationToken.Token);
 
 
@@ -68,18 +73,21 @@ namespace Demon
 
 
 
-            // mTimer.TimerTask(intervalTimeSpan,cancellationToken.Token).Wait();
-            MMonitor mMonitor = new MMonitor(true,Libraries.Settings.Get("point_modelo"));
+            // FUNCIONA BIEN
+            MMonitor mMonitor = new MMonitor(local=="1"?true:false,host);
+            mMonitor.ModeMessage = MMonitor.Modo.console;
+            //var d = mMonitor.Process(intervalTimeSpan, cancellationToken.Token);
 
-            var d = mMonitor.Process(intervalTimeSpan, cancellationToken.Token);
-            //MTimer.Elapsed += mMonitor.Process;
-            //MTimer.Start();
+
+            MTimer.Elapsed += mMonitor.Process;
+            MTimer.Start();
+            Console.WriteLine("Iniciando procesos");
             Console.ReadLine();
 
-            //MTimer.Stop();
+            MTimer.Stop();
 
 
-            cancellationToken.Cancel();
+           // cancellationToken.Cancel();
 
 
         }

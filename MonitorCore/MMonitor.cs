@@ -26,9 +26,9 @@ namespace MonitorCore
         private Interfaces.IModelos Server;
         private bool Local = false;
         public bool Error;
+        public Modo ModeMessage = Modo.defaults;
 
-        public MMonitor() {
-        }
+        
 
         public MMonitor(bool Local, string hosts)
         {
@@ -40,10 +40,7 @@ namespace MonitorCore
                 channelFactory = new ChannelFactory<Interfaces.IModelos>(new BasicHttpBinding() { SendTimeout = TimeSpan.Parse("0:59:59") }, EndPointHost);
                 Server = channelFactory.CreateChannel();
             }
-            else
-            {
-                WriteEventLogEntry(EventLogEntryType.Warning, 1, "Cambiando a local");
-            }
+            
             
         }
         public async Task Process(TimeSpan interval, CancellationToken cancellationToken)
@@ -101,9 +98,9 @@ namespace MonitorCore
                         if (LTasks.ContainsKey(mod.IDMODPOZO) == false)
                         {
                             if (Local)
-                                LTasks.Add(mod.IDMODPOZO, new Task(() => ExecLocal(db, mod)));
+                                LTasks.Add(mod.IDMODPOZO, new Task(() => ExecLocal(db, mod,ModeMessage)));
                             else
-                                LTasks.Add(mod.IDMODPOZO, new Task(() => ExecRemote(db, mod, Server)));
+                                LTasks.Add(mod.IDMODPOZO, new Task(() => ExecRemote(db, mod, Server,ModeMessage)));
 
 
                         }
@@ -133,14 +130,16 @@ namespace MonitorCore
                 }
                 catch (Exception ex)
                 {
-                    WriteEventLogEntry(System.Diagnostics.EventLogEntryType.Error, 1, ex.Message);
+                   
+                        WriteEventLogEntry(System.Diagnostics.EventLogEntryType.Error, 1, ex.Message,ModeMessage);
+                    
                 }
             }
         }
         public void Process(object sender, ElapsedEventArgs e)
         {
             bool Disposed = false;
-            var r = Server.GetList(1);
+          
             List<VW_MOD_POZO> ListModelos = new List<VW_MOD_POZO>();
             if (Local)
             {
@@ -151,7 +150,8 @@ namespace MonitorCore
             {
 
                 Disposed = Server.Dispose();
-                foreach(var vwModPozo in Server.GetList(1))
+                var JsonModelos = Server.GetList(1);
+                foreach (var vwModPozo in JsonModelos)
                 {
                     ListModelos.Add(JsonConvert.DeserializeObject<VW_MOD_POZO>(vwModPozo));
 
@@ -162,26 +162,40 @@ namespace MonitorCore
             
             try
             {
-                var tmp_tasks = LTasks.Keys.ToArray();
+                
 
-                foreach (var task in tmp_tasks)
-                {
-                    if (LTasks[task].IsCompleted || LTasks[task].IsFaulted)
-                    {
-                        LTasks.Remove(task);
-
-                    }
-
-                }
+                
 
                 foreach (var mod in ListModelos)
                 {
                     if (LTasks.ContainsKey(mod.IDMODPOZO) == false)
                     {
                         if (Local)
-                            LTasks.Add(mod.IDMODPOZO, new Task(() => ExecLocal(db, mod)));
+                        {
+                            LTasks.Add(mod.IDMODPOZO, new Task(() => ExecLocal(db, mod,ModeMessage)));
+                            //if (mod.ESTABILIDAD > 0)
+                            //{
+                            //    LTasks.Add("EST_" + mod.IDMODPOZO, new Task(() =>
+                            //    {
+
+
+                            //    }));
+                            //}
+
+                        }
                         else
-                            LTasks.Add(mod.IDMODPOZO, new Task(() => ExecRemote(db, mod, Server)));
+                        {
+                            LTasks.Add(mod.IDMODPOZO, new Task(() => ExecRemote(db, mod, Server,ModeMessage)));
+                            //if (mod.ESTABILIDAD > 0)
+                            //{
+                            //    LTasks.Add("EST_" + mod.IDMODPOZO, new Task(() => { Server.Estabilidad(mod.IDMODPOZO); }));
+                            //}
+
+                        }
+                            
+
+
+                        
 
 
                     }
@@ -193,6 +207,17 @@ namespace MonitorCore
                     {
                         // proceso++;
                     }
+                }
+                var tmp_tasks = LTasks.Keys.ToArray();
+
+                foreach (var task in tmp_tasks)
+                {
+                    if (LTasks[task].IsCompleted || LTasks[task].IsFaulted)
+                    {
+                        LTasks.Remove(task);
+
+                    }
+
                 }
 
                 if (Disposed == true && LTasks.Count > 0)
@@ -210,12 +235,14 @@ namespace MonitorCore
             }
             catch(Exception ex)
             {
-                WriteEventLogEntry(System.Diagnostics.EventLogEntryType.Error,0, ex.Message);
+                
+                   WriteEventLogEntry(System.Diagnostics.EventLogEntryType.Error, 1, ex.Message,ModeMessage);
+                
             }
             
         }
        
-        private static bool ExecRemote(Entities_ModeloCI db, VW_MOD_POZO mod_pozo, Interfaces.IModelos server)
+        private static bool ExecRemote(Entities_ModeloCI db, VW_MOD_POZO mod_pozo, Interfaces.IModelos server,Modo MError)
         {
             try
             {
@@ -234,22 +261,30 @@ namespace MonitorCore
                     default:
                         result = server.Execute(mod_pozo.IDMODPOZO, null);
 
-                        if (result)
+                        if (result && mod_pozo.ESTABILIDAD > 0)
                         {
                             server.Estabilidad(mod_pozo.IDMODPOZO);
                         }
                         break;
                 }
+
+                if(MError == Modo.console)
+                {
+                   WriteLineText(mod_pozo.POZO+ ": Modelo ejecutado correctamente","success");
+                }
                 return true;
             }
             catch (Exception ex)
             {
-                WriteEventLogEntry(System.Diagnostics.EventLogEntryType.Error, 2, ex.Message);
+
+                WriteEventLogEntry(System.Diagnostics.EventLogEntryType.Error, 1, mod_pozo.POZO + ": "+ex.Message,MError);
+
+                return false;
 
             }
-            return false;
+            
         }
-        private static bool ExecLocal(Entities_ModeloCI db,VW_MOD_POZO mod_pozo)
+        private static bool ExecLocal(Entities_ModeloCI db,VW_MOD_POZO mod_pozo,Modo MError)
         {
             bool response = false;
             ModeloProsper.Logger Logger = new ModeloProsper.Logger(mod_pozo.IDMODPOZO);
@@ -343,7 +378,10 @@ namespace MonitorCore
 
                 Logger.SetEstatus(3, "Ejecución correcta");
 
-
+                if (MError == Modo.console)
+                {
+                    WriteLineText(mod_pozo.POZO + ": Modelo ejecutado correctamente", "success");
+                }
 
                 return response;
             }
@@ -354,8 +392,8 @@ namespace MonitorCore
 
                 if ((Logger.Intentos + 1) < Logger.Configuracion.MAXREINTENTOS)
                     modelo.Reset(mod_pozo.IDMODPOZO, 0);
-
-                WriteEventLogEntry(System.Diagnostics.EventLogEntryType.Error, 1, ex.Message);
+                
+                WriteEventLogEntry(System.Diagnostics.EventLogEntryType.Error, 1, mod_pozo.POZO + ": "+ex.Message,MError);
                 return false;
 
             }
@@ -413,30 +451,44 @@ namespace MonitorCore
                 throw new Exception(ex.Message);
             }
         }
-        public static void WriteEventLogEntry(EventLogEntryType entryType, int eventID, string message)
+        public static void WriteEventLogEntry(EventLogEntryType entryType, int eventID, string message, Modo MError)
         {
-            // Create an instance of EventLog
-            System.Diagnostics.EventLog eventLog = new System.Diagnostics.EventLog();
 
-            // Check if the event source exists. If not create it.
-            if (System.Diagnostics.EventLog.SourceExists("CIMonitor") == false)
+
+            switch (MError)
             {
-                System.Diagnostics.EventLog.CreateEventSource("CIMonitor", "CIMonitor");
+                case Modo.service:
+                    // Create an instance of EventLog
+                    System.Diagnostics.EventLog eventLog = new System.Diagnostics.EventLog();
+
+                    // Check if the event source exists. If not create it.
+                    if (System.Diagnostics.EventLog.SourceExists("CIMonitor") == false)
+                    {
+                        System.Diagnostics.EventLog.CreateEventSource("CIMonitor", "CIMonitor");
+                    }
+
+                    // Set the source name for writing log entries.
+                    eventLog.Source = "CIMonitor";
+
+
+
+
+                    // Write an entry to the event log.
+                    eventLog.WriteEntry(message,
+                                        entryType,
+                                        eventID);
+
+                    // Close the Event Log
+                    eventLog.Close();
+                    break;
+                case Modo.console:
+                    WriteLineText(message, "danger");
+                    break;
+                default:
+                   
+                    break;
             }
-
-            // Set the source name for writing log entries.
-            eventLog.Source = "CIMonitor";
-
-
-
-
-            // Write an entry to the event log.
-            eventLog.WriteEntry(message,
-                                entryType,
-                                eventID);
-
-            // Close the Event Log
-            eventLog.Close();
+           
 
             //switch (entryType)
             //{
@@ -455,6 +507,38 @@ namespace MonitorCore
             //    eventLog.WriteEntry(message, entryType, eventID, 1);
             //    eventLog.Close();
             //}
+        }
+        public static void WriteLineText(string message, string t = "")
+        {
+            switch (t)
+            {
+                case "warning":
+                    break;
+                case "danger":
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
+
+                    break;
+                case "success":
+                    Console.ForegroundColor = ConsoleColor.DarkGreen;
+
+                    break;
+                default:
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    break;
+
+            }
+
+            Console.WriteLine(message);
+            Console.ForegroundColor = ConsoleColor.Gray;
+        }
+
+        public enum Modo
+        {
+            service,
+            console,
+            window,
+            defaults
+
         }
     }
 }

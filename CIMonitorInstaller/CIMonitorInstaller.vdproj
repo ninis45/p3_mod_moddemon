@@ -57,24 +57,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_414E1CE70B3902E0C5E697FEAAD25B07"
-        "OwnerKey" = "8:_5C2F6D27DF1F4CF88747AA35BBED17E5"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_414E1CE70B3902E0C5E697FEAAD25B07"
-        "OwnerKey" = "8:_DEF27ECDC1694B1A9DEE27171CEDCC02"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_414E1CE70B3902E0C5E697FEAAD25B07"
-        "OwnerKey" = "8:_8BCCFDE53DBB31A4ABD743E3DDF73470"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_5C2F6D27DF1F4CF88747AA35BBED17E5"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -123,7 +105,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_AB3D0B9399214474972052203E0344AC"
+        "MsmKey" = "8:_A26565EA577A49ACB0214A8DC9CF3BE7"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -167,18 +149,6 @@
         {
         "MsmKey" = "8:_DB07E2FCD7B770AC5FE67E277FF2E4B2"
         "OwnerKey" = "8:_0D89D348807DBCB389712DE4233C179B"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_DB07E2FCD7B770AC5FE67E277FF2E4B2"
-        "OwnerKey" = "8:_DEF27ECDC1694B1A9DEE27171CEDCC02"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_DB07E2FCD7B770AC5FE67E277FF2E4B2"
-        "OwnerKey" = "8:_5C2F6D27DF1F4CF88747AA35BBED17E5"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -262,12 +232,6 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_414E1CE70B3902E0C5E697FEAAD25B07"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_F1BDA7EE111CBF9BB3262467C77DC6B2"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -296,6 +260,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.6.1"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.6.1 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.6.1"
+                    }
+                }
             }
         }
         "Release"
@@ -320,6 +292,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.6.1"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.6.1 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.6.1"
+                    }
+                }
             }
         }
     }
@@ -471,37 +451,6 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_414E1CE70B3902E0C5E697FEAAD25B07"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:DBConnection, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_414E1CE70B3902E0C5E697FEAAD25B07"
-                    {
-                    "Name" = "8:DBConnection.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:DBConnection.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_DF591F17E10147B495BBAD96AD0B95EC"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_6B6E7F393F2A05DD4E7F046205D6E4A6"
             {
             "AssemblyRegister" = "3:1"
@@ -564,9 +513,9 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_AB3D0B9399214474972052203E0344AC"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A26565EA577A49ACB0214A8DC9CF3BE7"
             {
-            "SourcePath" = "8:C:\\Users\\Sigsa\\Pictures\\logov2_Vxb_icon.ico"
+            "SourcePath" = "8:..\\..\\Iconos\\logov2_Vxb_icon.ico"
             "TargetName" = "8:logov2_Vxb_icon.ico"
             "Tag" = "8:"
             "Folder" = "8:_DF591F17E10147B495BBAD96AD0B95EC"
@@ -624,11 +573,11 @@
                 {
                     "_DB07E2FCD7B770AC5FE67E277FF2E4B2"
                     {
-                    "Name" = "8:Newtonsoft.Json.dll"
+                    "Name" = "8:Newtonsoft.Json.DLL"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:Newtonsoft.Json.dll"
+            "SourcePath" = "8:Newtonsoft.Json.DLL"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_DF591F17E10147B495BBAD96AD0B95EC"
@@ -865,7 +814,7 @@
             "Target" = "8:_5C2F6D27DF1F4CF88747AA35BBED17E5"
             "Folder" = "8:_44395887BAF8401FBD1E3FE0EB17B8EC"
             "WorkingFolder" = "8:_DF591F17E10147B495BBAD96AD0B95EC"
-            "Icon" = "8:_AB3D0B9399214474972052203E0344AC"
+            "Icon" = "8:"
             "Feature" = "8:"
             }
         }
@@ -1297,7 +1246,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_DEF27ECDC1694B1A9DEE27171CEDCC02"
             {
-            "SourcePath" = "8:..\\CIMonitor\\obj\\Release\\CIMonitor.exe"
+            "SourcePath" = "8:..\\CIMonitor\\obj\\Debug\\CIMonitor.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_DF591F17E10147B495BBAD96AD0B95EC"
