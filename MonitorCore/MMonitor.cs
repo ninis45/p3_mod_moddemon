@@ -453,60 +453,50 @@ namespace MonitorCore
         }
         public static void WriteEventLogEntry(EventLogEntryType entryType, int eventID, string message, Modo MError)
         {
-
-
-            switch (MError)
+            try
             {
-                case Modo.service:
-                    // Create an instance of EventLog
-                    System.Diagnostics.EventLog eventLog = new System.Diagnostics.EventLog();
 
-                    // Check if the event source exists. If not create it.
-                    if (System.Diagnostics.EventLog.SourceExists("CIMonitor") == false)
-                    {
-                        System.Diagnostics.EventLog.CreateEventSource("CIMonitor", "CIMonitor");
-                    }
+                switch (MError)
+                {
+                    case Modo.service:
+                        // Create an instance of EventLog
+                        System.Diagnostics.EventLog eventLog = new System.Diagnostics.EventLog();
 
-                    // Set the source name for writing log entries.
-                    eventLog.Source = "CIMonitor";
+                        // Check if the event source exists. If not create it.
+                        if (System.Diagnostics.EventLog.SourceExists("CIMonitor") == false)
+                        {
+                            System.Diagnostics.EventLog.CreateEventSource("CIMonitor", "CIMonitor");
+                        }
+
+                        // Set the source name for writing log entries.
+                        eventLog.Source = "CIMonitor";
 
 
 
 
-                    // Write an entry to the event log.
-                    eventLog.WriteEntry(message,
-                                        entryType,
-                                        eventID);
+                        // Write an entry to the event log.
+                        eventLog.WriteEntry(message,
+                                            entryType,
+                                            eventID);
 
-                    // Close the Event Log
-                    eventLog.Close();
-                    break;
-                case Modo.console:
-                    WriteLineText(message, "danger");
-                    break;
-                default:
-                   
-                    break;
+                        // Close the Event Log
+                        eventLog.Close();
+                        break;
+                    case Modo.console:
+                        WriteLineText(message, "danger");
+                        break;
+                    default:
+
+                        break;
+                }
+            }
+            catch (Exception)
+            {
+                throw;
             }
            
 
-            //switch (entryType)
-            //{
-            //    case 0:
-            //        break;
-            //    case 1:
-            //        break;
-            //    case 2:
-            //        break;
-
-            //}
-
-            //using (EventLog eventLog = new EventLog("Application"))
-            //{
-            //    eventLog.Source = "CIMonitor";
-            //    eventLog.WriteEntry(message, entryType, eventID, 1);
-            //    eventLog.Close();
-            //}
+            
         }
         public static void WriteLineText(string message, string t = "")
         {

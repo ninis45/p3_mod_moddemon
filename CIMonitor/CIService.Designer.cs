@@ -31,9 +31,10 @@
             // 
             // CIMonitor
             // 
+            this.CanHandleSessionChangeEvent = true;
             this.CanPauseAndContinue = true;
             this.CanShutdown = true;
-            this.ServiceName = "CMonitor";
+            this.ServiceName = "CIMonitor";
 
         }
 

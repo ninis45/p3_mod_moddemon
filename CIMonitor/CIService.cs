@@ -17,28 +17,30 @@ namespace CIMonitor
     public partial class CIMonitor : ServiceBase
     {
 
-        System.Timers.Timer MTimer;
+        public System.Timers.Timer MTimer;
+        
+
         public CIMonitor()
         {
             InitializeComponent();
-            
-          
 
-          
+
+
             
-           
+
+
 
         }
         
         protected override void OnStart(string[] args)
         {
             // TODO: agregar código aquí para iniciar el servicio.
-             MonitorCore.Libraries.LibConfiguration LibConfiguration = new MonitorCore.Libraries.LibConfiguration();
-             CancellationTokenSource cancellationToken =new CancellationTokenSource();
-             MTimer = new System.Timers.Timer(5000) { AutoReset=true,Enabled=true };
+             //MonitorCore.Libraries.LibConfiguration LibConfiguration = new MonitorCore.Libraries.LibConfiguration();
+             //CancellationTokenSource cancellationToken =new CancellationTokenSource();
+            MTimer = new System.Timers.Timer(5000) { AutoReset=true,Enabled=true };
+            MonitorCore.Libraries.LibConfiguration LibConfiguration = new MonitorCore.Libraries.LibConfiguration();
 
-             
-            
+
             try
             {
                 if (args != null && args.Count() > 2)
@@ -48,21 +50,21 @@ namespace CIMonitor
 
                 }
 
+                
                
                 MMonitor LibMonitor = new MMonitor(LibConfiguration.Local,LibConfiguration.Host);
                 LibMonitor.ModeMessage = MMonitor.Modo.service;
-                MTimer.Elapsed += LibMonitor.Process;
-                
+                MTimer.Elapsed += LibMonitor.Process;             
 
                 MTimer.Start();
 
 
 
             }
-            catch(Exception ex)
+            catch(Exception)
             {
-                
-                MMonitor.WriteEventLogEntry(System.Diagnostics.EventLogEntryType.Error, 0, ex.Message,MMonitor.Modo.service);
+                throw; 
+               // MMonitor.WriteEventLogEntry(System.Diagnostics.EventLogEntryType.Error, 0, ex.Message,MMonitor.Modo.service);
             }
             
         }
@@ -70,9 +72,16 @@ namespace CIMonitor
         protected override void OnStop()
         {
             // TODO: agregar código aquí para realizar cualquier anulación necesaria para detener el servicio.
+
+            try
+            {
+                MTimer.Stop();
+            }
+            catch 
+            {
+                throw;
+            }
             
-           
-            MTimer.Stop();
         }
         public void OnDebug()
         {
@@ -82,6 +91,18 @@ namespace CIMonitor
         public void ShowConfiguracion()
         {
            
+        }
+        public bool TestRemote()
+        {
+
+            try
+            {
+                return true;
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
         
     }

@@ -246,6 +246,8 @@ namespace MonitorWin.Forms
         {
             ServiceController service = new ServiceController(NameProcess, Environment.MachineName);
 
+          
+
             try
             {
                
