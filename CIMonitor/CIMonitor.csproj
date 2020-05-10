@@ -70,7 +70,7 @@
     </Reference>
     <Reference Include="MonitorCore, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\MonitorCore\bin\Release\MonitorCore.dll</HintPath>
+      <HintPath>..\MonitorCore\bin\Debug\MonitorCore.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration.Install" />

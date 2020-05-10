@@ -45,7 +45,8 @@ namespace MonitorCore
             }
             catch(Exception ex)
             {
-                throw new Exception(ex.Message);
+                WriteEventLogEntry(System.Diagnostics.EventLogEntryType.Error, 1,  ex.Message, ModeMessage);
+                //throw new Exception(ex.Message);
             }
             
             
