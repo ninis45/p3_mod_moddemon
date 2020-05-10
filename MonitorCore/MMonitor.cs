@@ -33,12 +33,19 @@ namespace MonitorCore
         public MMonitor(bool Local, string hosts)
         {
             this.Local = Local;
-            if(this.Local == false)
+            try
             {
+                if (this.Local == false)
+                {
 
-                EndPointHost = new EndpointAddress(hosts);
-                channelFactory = new ChannelFactory<Interfaces.IModelos>(new BasicHttpBinding() { SendTimeout = TimeSpan.Parse("0:59:59") }, EndPointHost);
-                Server = channelFactory.CreateChannel();
+                    EndPointHost = new EndpointAddress(hosts);
+                    channelFactory = new ChannelFactory<Interfaces.IModelos>(new BasicHttpBinding() { SendTimeout = TimeSpan.Parse("0:59:59") }, EndPointHost);
+                    Server = channelFactory.CreateChannel();
+                }
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
             }
             
             
@@ -277,7 +284,7 @@ namespace MonitorCore
             catch (Exception ex)
             {
 
-                WriteEventLogEntry(System.Diagnostics.EventLogEntryType.Error, 1, mod_pozo.POZO + ": "+ex.Message,MError);
+                WriteEventLogEntry(System.Diagnostics.EventLogEntryType.Error, 22, mod_pozo.POZO + ": "+ex.Message,MError);
 
                 return false;
 
@@ -393,7 +400,7 @@ namespace MonitorCore
                 if ((Logger.Intentos + 1) < Logger.Configuracion.MAXREINTENTOS)
                     modelo.Reset(mod_pozo.IDMODPOZO, 0);
                 
-                WriteEventLogEntry(System.Diagnostics.EventLogEntryType.Error, 1, mod_pozo.POZO + ": "+ex.Message,MError);
+                WriteEventLogEntry(System.Diagnostics.EventLogEntryType.Error, 21, mod_pozo.POZO + ": "+ex.Message,MError);
                 return false;
 
             }
@@ -418,17 +425,24 @@ namespace MonitorCore
                     {
                         throw new Exception($"Unexpected status code: {response.StatusCode}");
                     }
+
+                    return Server.Monitor(ref ReturnServ);
                 }
-                return Server.Monitor(ref ReturnServ);
+              
             }
             catch(Exception ex)
             {
-                Error = true;
+                throw new Exception(ex.Message);
+                //Error = true;
+                //if(ex.InnerException != null) return new List<string>() { ex.InnerException.Message};
+                //else return new List<string>() { ex.Message };
 
-                if(ex.InnerException != null) return new List<string>() { ex.InnerException.Message};
-                else return new List<string>() { ex.Message };
-
-
+                ////if (ModeMessage == Modo.service)
+                ////    throw;
+                ////else
+                ////{
+                ////    throw new Exception(ex.Message);
+                ////}
 
             }
             

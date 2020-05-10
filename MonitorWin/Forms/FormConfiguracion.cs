@@ -22,7 +22,7 @@ namespace MonitorWin.Forms
     {
         private string NameProcess = "CIMonitor";
         private Process[] ListProcess;        
-        private Libraries.LibConfig libConfig;
+        private MonitorCore.Libraries.LibConfiguration libConfig;
 
        
 
@@ -30,12 +30,15 @@ namespace MonitorWin.Forms
         private string Prosper;
         private bool ForcedClose;
         private CancellationTokenSource cancellationToken;
+
+        private System.Timers.Timer timerMonitor;
+
         public FormConfiguracion()
         {
             InitializeComponent();
+            Control.CheckForIllegalCrossThreadCalls = false;
 
-
-            libConfig = new Libraries.LibConfig();
+            libConfig = new MonitorCore.Libraries.LibConfiguration();
 
             //TimerMonitor = new System.Timers.Timer(100) { AutoReset = true };
             //TimerMonitor.Elapsed += RequestMonitor;
@@ -61,15 +64,16 @@ namespace MonitorWin.Forms
         }
 
 
-       
-        public static async Task RequestMonitor(TimeSpan interval, CancellationToken cancellationToken, MonitorCore.MMonitor mMonitor,TextBox txtArea)
+
+        public static async Task RequestMonitor(TimeSpan interval, CancellationToken cancellationToken, MonitorCore.MMonitor mMonitor, TextBox txtArea)
         {
             string Prosper = null;
             int intentos = 0;
-
+            bool last_error = false;
+            txtArea.ForeColor = Color.Black;
             while (true)
             {
-                txtArea.ForeColor = Color.Black;
+               
 
                 try
                 {
@@ -79,106 +83,158 @@ namespace MonitorWin.Forms
                     }
                     var List = mMonitor.Monitor(ref Prosper);
 
+                   
+                    if (last_error!= mMonitor.Error)
+                    {
+                        txtArea.Clear();
+                        if (mMonitor.Error == false)
+                        {
+                            txtArea.ForeColor = Color.Black;
+                        }
+                        else
+                        {
+                            txtArea.ForeColor = Color.Red;
+                        }
+                    }
+
                     if (List.Count > 0)
                     {
                         foreach (var l in List)
                         {
-                            if (mMonitor.Error)
-                            {
-                                txtArea.ForeColor = Color.Red;
-                                txtArea.Clear();
-                            }
-                           
-                                txtArea.AppendText(l + " \r\n");
+                            last_error = mMonitor.Error;
                             
-                            
+
+                            txtArea.AppendText(l + " \r\n");
+
+
                         }
                     }
 
                     intentos++;
 
-                    if(intentos > 5)
+                    if (intentos > 5)
                     {
                         intentos = 0;
                         Prosper = null;
                     }
-                    await Task.Delay(interval);
+                    await Task.Delay(interval, cancellationToken);
                 }
-                catch (Exception ex) {
-                   
-                    txtArea.ForeColor = Color.Red;
-                    txtArea.Text = "Error: "+ex.Message + "\r\n";
+                catch (Exception ex)
+                {
+                    throw;
+                    //last_error = true;
+                    //txtArea.ForeColor = Color.Red;
+                    //txtArea.Text = "Error: " + ex.Message + "\r\n";
                 }
             }
         }
 
-
-        private void RequestHost(object sender, EventArgs e)
+        public static void RequestMonitor(object sender, ElapsedEventArgs e,string Prosper, MonitorCore.MMonitor mMonitor,TextBox txtArea)
         {
-            MonitorCore.MMonitor mMonitor = new MMonitor(false,txtHost.Text);
-            txtArea.ForeColor = Color.Black;
-            txtArea.Text = "Conectando...";
-            groupBox2.Enabled = false;
             try
             {
-                Prosper = null;
-                Task.Factory.StartNew(()=> {
-                    try
-                    {
-                        if (mMonitor.Monitor(ref Prosper).Count > 0)
-                        {
-                            return true;
-                        }
-                    }
-                    catch(Exception ex)
-                    {
-                        MessageBox.Show(ex.Message, "Campos inteligentes", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    
+                
+                var List = mMonitor.Monitor(ref Prosper);
 
-                    return false;
-                }).ContinueWith((response)=> {
-                    try
+                if (List.Count > 0)
+                {
+                    foreach (var l in List)
                     {
-                        if (response.Result)
-                        {
-                            txtArea.Text = "Estatus: Conectado";
-
-                            libConfig.Host = txtHost.Text;
-                            groupBox2.Enabled = true;
-                        }
-                        else
+                        if (mMonitor.Error)
                         {
                             txtArea.ForeColor = Color.Red;
-                            txtArea.Text = "Error al intentar conectarse";
+                            txtArea.Clear();
                         }
-                        
+
+                        txtArea.AppendText(l + " \r\n");
+
+
                     }
-                    catch(Exception ex)
-                    {
-                        MessageBox.Show(ex.Message, "Campos inteligentes", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        txtArea.ForeColor = Color.Red;
-                        txtArea.Text = ex.Message;
-                    }
-                    
-                }, CancellationToken.None, TaskContinuationOptions.None, TaskScheduler.FromCurrentSynchronizationContext());
-                
+                }
+
+                //intentos++;
+
+                //if (intentos > 5)
+                //{
+                //    intentos = 0;
+                //    Prosper = null;
+                //}
             }
             catch(Exception ex)
             {
-                txtArea.Text = ex.Message;
                 txtArea.ForeColor = Color.Red;
+                txtArea.Text = ex.Message;
+                txtArea.Clear();
             }
-            
-            
         }
+        //private void RequestHost(object sender, EventArgs e)
+        //{
+        //    MonitorCore.MMonitor mMonitor = new MMonitor(false,txtHost.Text);
+        //    txtArea.ForeColor = Color.Black;
+        //    txtArea.Text = "Conectando...";
+        //    groupBox2.Enabled = false;
+        //    try
+        //    {
+        //        Prosper = null;
+        //        Task.Factory.StartNew(()=> {
+        //            try
+        //            {
+        //                if (mMonitor.Monitor(ref Prosper).Count > 0)
+        //                {
+        //                    return true;
+        //                }
+        //            }
+        //            catch(Exception ex)
+        //            {
+        //                MessageBox.Show(ex.Message, "Campos inteligentes", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //            }
+                    
+
+        //            return false;
+        //        }).ContinueWith((response)=> {
+        //            try
+        //            {
+        //                if (response.Result)
+        //                {
+        //                    txtArea.Text = "Estatus: Conectado";
+
+        //                    libConfig.Host = txtHost.Text;
+                            
+        //                }
+        //                else
+        //                {
+        //                    txtArea.ForeColor = Color.Red;
+        //                    txtArea.Text = "Error al intentar conectarse";
+        //                }
+        //                groupBox2.Enabled = true;
+        //            }
+        //            catch(Exception ex)
+        //            {
+        //                MessageBox.Show(ex.Message, "Campos inteligentes", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //                txtArea.ForeColor = Color.Red;
+        //                txtArea.Text = ex.Message;
+        //                groupBox2.Enabled = true;
+        //            }
+                    
+        //        }, CancellationToken.None, TaskContinuationOptions.None, TaskScheduler.FromCurrentSynchronizationContext());
+                
+        //    }
+        //    catch(Exception ex)
+        //    {
+        //        txtArea.Text = ex.Message;
+        //        txtArea.ForeColor = Color.Red;
+        //    }
+            
+            
+        //}
 
         private void btnStart_Click(object sender, EventArgs e)
         {
             txtArea.ForeColor = Color.Black;
             
-            libConfig.Local = rdbLocal.Checked;            
-            libConfig.Save();
+            libConfig.Local = rdbLocal.Checked;
+            libConfig.Host = txtHost.Text;
+            
             txtArea.Text = "Iniciando...";
             Task.Run(() => {
 
@@ -207,11 +263,11 @@ namespace MonitorWin.Forms
             txtHost.Text = libConfig.Host;
             rdbLocal.Checked = libConfig.Local;//ConfigurationManager.AppSettings["host"];
             ListProcess = Process.GetProcessesByName(NameProcess);
-            var pr = Process.GetProcesses();
-            //Local = Convert.ToBoolean(ConfigurationManager.AppSettings["local"]);
+           
 
             if (ListProcess.Count() > 0)
             {
+                groupBox1.Enabled = false;
                 contextMenuStrip1.Items[2].Enabled = false;
                 contextMenuStrip1.Items[3].Enabled = true;
                 btnStart.Enabled = false;
@@ -220,19 +276,24 @@ namespace MonitorWin.Forms
                 btnRestart.Enabled = true;
                 cancellationToken = new CancellationTokenSource();
                txtArea.Text = "Estatus: Iniciado \r\n";
-                txtHost.ReadOnly = true;
+
+
+               
                 var d = RequestMonitor(new TimeSpan(0, 0, 0, 0, 9000), cancellationToken.Token, new MMonitor(libConfig.Local, libConfig.Host), txtArea);
             }
             else
             {
+                groupBox1.Enabled = true;
                 contextMenuStrip1.Items[2].Enabled = true;
                 contextMenuStrip1.Items[3].Enabled = false;
                 btnStart.Enabled = true;
                 btnStop.Enabled = false;
-                btnGo.Enabled = true;
+                //btnGo.Enabled = true;
                 btnRestart.Enabled = false;
-                txtHost.ReadOnly = false;
+                //txtHost.ReadOnly = false;
                 txtArea.Text = "Estatus: Detenido \r\n";
+                //timerMonitor.Stop();
+                if(cancellationToken != null) cancellationToken.Cancel();
             }
         }
 
@@ -250,18 +311,27 @@ namespace MonitorWin.Forms
 
             try
             {
-               
+                MonitorCore.MMonitor mMonitor = new MMonitor(rdbLocal.Checked, txtHost.Text);
 
-               
-                service.Start(new string[] { libConfig.Local.ToString(), libConfig.Host, libConfig.ConnectionString });
-                service.WaitForStatus(ServiceControllerStatus.Running);
-                
+                if (ValidHost(mMonitor))
+                {
+                    libConfig.Save();
 
-                
-               
+                    if (libConfig.Local == false) {
+                        service.Start(new string[] { libConfig.Host });
+                    }
+                    else
+                    {
+                        service.Start(new string[] { libConfig.UserBd,libConfig.PassBd,libConfig.UrlBd,libConfig.CatalogBd});
+                    }
+                    service.WaitForStatus(ServiceControllerStatus.Running);
 
-                MessageBox.Show("Servicio iniciado", "Campos Inteligentes", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
+
+
+
+                    MessageBox.Show("Servicio iniciado", "Campos Inteligentes", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
 
             }
             catch (Exception ex)
@@ -278,9 +348,9 @@ namespace MonitorWin.Forms
             {
                 
                 service.Stop();
-                service.WaitForStatus(ServiceControllerStatus.Stopped);             
+                service.WaitForStatus(ServiceControllerStatus.Stopped);            
 
-                cancellationToken.Cancel();                
+                             
                 Task.Delay(2000).Wait();
                
             }
@@ -339,14 +409,99 @@ namespace MonitorWin.Forms
         private void FormConfiguracion_FormClosing(object sender, FormClosingEventArgs e)
         {
 
-            if(ForcedClose == false) e.Cancel = true;
-            this.WindowState = FormWindowState.Minimized;
+            if (ForcedClose == false) {
+                e.Cancel = true;
+                this.WindowState = FormWindowState.Minimized;
+            }
+           
+           
         }
 
         private void salirToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.ForcedClose = true;
             this.Close();
+        }
+
+        private void IsChecked(object sender, EventArgs e)
+        {
+            RadioButton rdbLocal = sender as RadioButton;
+
+            if (rdbLocal.Checked)
+            {
+                btnGo.Enabled = false;
+                txtHost.Enabled = false;
+            }
+            else
+            {
+                btnGo.Enabled = true;
+                txtHost.Enabled = true;
+            }
+        }
+
+        private bool ValidHost(MMonitor mMonitor)
+        {
+            try
+            {
+               
+                string Prosper = null;
+                if (mMonitor.Monitor(ref Prosper).Count() > 0)
+                {
+                    return true;
+                }
+                //txtArea.ForeColor = Color.Black;
+                //txtArea.Text = "Conectando...";
+                //groupBox2.Enabled = false;
+                //bool result = false;
+                //Task.Factory.StartNew(() => {
+                //    try
+                //    {
+                //        if (mMonitor.Monitor(ref Prosper).Count() > 0)
+                //        {
+                //            return true;
+                //        }
+                //    }
+                //    catch (Exception ex)
+                //    {
+                //        MessageBox.Show(ex.Message, "Campos inteligentes", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //    }
+
+
+                //    return false;
+                //}).ContinueWith((response) => {
+                //    try
+                //    {
+                //        if (response.Result)
+                //        {
+                //            txtArea.Text = "Estatus: Conectado";
+                //            libConfig.Host = txtHost.Text;
+                //            result = true;
+
+                //        }
+                //        else
+                //        {
+                //            txtArea.ForeColor = Color.Red;
+                //            txtArea.Text = "Error al intentar conectarse";
+                //        }
+                //        groupBox2.Enabled = true;
+                //    }
+                //    catch (Exception ex)
+                //    {
+                //        MessageBox.Show(ex.Message, "Campos inteligentes", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //        txtArea.ForeColor = Color.Red;
+                //        txtArea.Text = ex.Message;
+                //        groupBox2.Enabled = true;
+                //    }
+
+                //}, CancellationToken.None, TaskContinuationOptions.None, TaskScheduler.FromCurrentSynchronizationContext()).Wait();
+
+
+                return false;
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
     }
 }

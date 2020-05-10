@@ -43,13 +43,21 @@ namespace CIMonitor
 
             try
             {
-                if (args != null && args.Count() > 2)
+                if (args != null)
                 {
-                    LibConfiguration.Refresh(Convert.ToBoolean(args[0]), args[1], args[2]);
-                    LibConfiguration.Save();
+                    if (args.Count() == 1)
+                    {
+                        LibConfiguration.Refresh(false, args[0]);
+                        LibConfiguration.Save();
 
+                    }
+                    if (args.Count() == 4)
+                    {
+                        LibConfiguration.Refresh(true, args[0], args[1], args[2], args[3]);
+                        LibConfiguration.Save();
+
+                    }
                 }
-
                 
                
                 MMonitor LibMonitor = new MMonitor(LibConfiguration.Local,LibConfiguration.Host);
@@ -58,13 +66,13 @@ namespace CIMonitor
 
                 MTimer.Start();
 
-
+                MMonitor.WriteEventLogEntry(System.Diagnostics.EventLogEntryType.Warning, 0,$"Iniciando monitor con configuracion local: {LibConfiguration.Local.ToString()} y host: {LibConfiguration.Host}", MMonitor.Modo.service);
 
             }
-            catch(Exception)
+            catch(Exception ex)
             {
-                throw; 
-               // MMonitor.WriteEventLogEntry(System.Diagnostics.EventLogEntryType.Error, 0, ex.Message,MMonitor.Modo.service);
+               // throw; 
+                MMonitor.WriteEventLogEntry(System.Diagnostics.EventLogEntryType.Error, 0, ex.Message,MMonitor.Modo.service);
             }
             
         }
@@ -85,6 +93,8 @@ namespace CIMonitor
         }
         public void OnDebug()
         {
+           // OnStart(new string[] {"http://google.com" });
+
             OnStart(null);
             OnStop();
         }
@@ -92,18 +102,7 @@ namespace CIMonitor
         {
            
         }
-        public bool TestRemote()
-        {
-
-            try
-            {
-                return true;
-            }
-            catch(Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
+        
         
     }
 }

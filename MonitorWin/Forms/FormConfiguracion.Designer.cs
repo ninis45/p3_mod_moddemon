@@ -113,7 +113,7 @@
             this.btnGo.TabIndex = 1;
             this.btnGo.Text = "Ir";
             this.btnGo.UseVisualStyleBackColor = true;
-            this.btnGo.Click += new System.EventHandler(this.RequestHost);
+           
             // 
             // txtHost
             // 
@@ -164,6 +164,7 @@
             this.rdbLocal.TabIndex = 2;
             this.rdbLocal.Text = "Local";
             this.rdbLocal.UseVisualStyleBackColor = true;
+            this.rdbLocal.CheckedChanged += new System.EventHandler(this.IsChecked);
             // 
             // rdbRemote
             // 
