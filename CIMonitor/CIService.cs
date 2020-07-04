@@ -18,7 +18,8 @@ namespace CIMonitor
     {
 
         public System.Timers.Timer MTimer;
-        
+        public System.Timers.Timer CTimer;
+
 
         public CIMonitor()
         {
@@ -35,14 +36,15 @@ namespace CIMonitor
         protected override void OnStart(string[] args)
         {
             // TODO: agregar código aquí para iniciar el servicio.
-             //MonitorCore.Libraries.LibConfiguration LibConfiguration = new MonitorCore.Libraries.LibConfiguration();
-             //CancellationTokenSource cancellationToken =new CancellationTokenSource();
-            MTimer = new System.Timers.Timer(5000) { AutoReset=true,Enabled=true };
-            MonitorCore.Libraries.LibConfiguration LibConfiguration = new MonitorCore.Libraries.LibConfiguration();
 
+
+            Process.Start("C:\\Program Files (x86)\\Petroleum Experts\\IPM 7.5\\prosper.exe");
 
             try
             {
+                MTimer = new System.Timers.Timer(20000) { AutoReset = true, Enabled = true };
+                CTimer = new System.Timers.Timer(500000) { AutoReset = true, Enabled = true };
+                MonitorCore.Libraries.LibConfiguration LibConfiguration = new MonitorCore.Libraries.LibConfiguration();
                 if (args != null)
                 {
                     if (args.Count() == 1)
@@ -58,23 +60,27 @@ namespace CIMonitor
 
                     }
                 }
-                
-               
-                MMonitor LibMonitor = new MMonitor(LibConfiguration.Local,LibConfiguration.Host);
+
+
+                MMonitor LibMonitor = new MMonitor(LibConfiguration.Local, LibConfiguration.Host);
                 LibMonitor.ModeMessage = MMonitor.Modo.service;
-                MTimer.Elapsed += LibMonitor.Process;             
+
+
+                MTimer.Elapsed += LibMonitor.Process;
+                CTimer.Elapsed += LibMonitor.RequestConds;
 
                 MTimer.Start();
+                CTimer.Start();
 
-                MMonitor.WriteEventLogEntry(System.Diagnostics.EventLogEntryType.Warning, 0,$"Iniciando monitor con configuracion local: {LibConfiguration.Local.ToString()} y host: {LibConfiguration.Host}", MMonitor.Modo.service);
-
+                MMonitor.WriteEventLogEntry(System.Diagnostics.EventLogEntryType.Warning, 0, $"Iniciando monitor con configuracion local: {LibConfiguration.Local.ToString()} y host: {LibConfiguration.Host}", MMonitor.Modo.service);
+                
             }
-            catch(Exception ex)
+            catch 
             {
-               // throw; 
-                MMonitor.WriteEventLogEntry(System.Diagnostics.EventLogEntryType.Error, 0, ex.Message,MMonitor.Modo.service);
+                 throw; 
+                //MMonitor.WriteEventLogEntry(System.Diagnostics.EventLogEntryType.Error, 0, ex.Message, MMonitor.Modo.service);
             }
-            
+
         }
 
         protected override void OnStop()
@@ -84,6 +90,7 @@ namespace CIMonitor
             try
             {
                 MTimer.Stop();
+                CTimer.Stop();
             }
             catch 
             {
@@ -98,9 +105,12 @@ namespace CIMonitor
             OnStart(null);
             OnStop();
         }
-        public void ShowConfiguracion()
+       
+
+        private void RequestConds(object sender, ElapsedEventArgs e)
         {
-           
+
+
         }
         
         

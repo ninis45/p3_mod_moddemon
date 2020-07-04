@@ -25,6 +25,9 @@ namespace MonitorCore.Interfaces
         void Program();
 
         [OperationContract]
+        Dictionary<string,List<string>> Condiciones();
+
+        [OperationContract]
         void Reset(string IdModPozo, int MaxIntentos);
 
         [OperationContract]

@@ -27,6 +27,9 @@ namespace MonitorCore
         private bool Local = false;
         public bool Error;
         public Modo ModeMessage = Modo.defaults;
+       
+       
+
 
         
 
@@ -37,16 +40,22 @@ namespace MonitorCore
             {
                 if (this.Local == false)
                 {
+                    var httpBinding = new BasicHttpBinding() {
+                        SendTimeout = TimeSpan.Parse("0:59:00"),
+                        MaxBufferSize = Int32.MaxValue,
+                        MaxReceivedMessageSize = Int32.MaxValue
+                    };
 
+                    
                     EndPointHost = new EndpointAddress(hosts);
-                    channelFactory = new ChannelFactory<Interfaces.IModelos>(new BasicHttpBinding() { SendTimeout = TimeSpan.Parse("0:59:59") }, EndPointHost);
+                    channelFactory = new ChannelFactory<Interfaces.IModelos>(httpBinding, EndPointHost);
                     Server = channelFactory.CreateChannel();
                 }
             }
             catch(Exception ex)
             {
-                WriteEventLogEntry(System.Diagnostics.EventLogEntryType.Error, 1,  ex.Message, ModeMessage);
-                //throw new Exception(ex.Message);
+                
+                throw new Exception(ex.Message);
             }
             
             
@@ -146,33 +155,48 @@ namespace MonitorCore
         }
         public void Process(object sender, ElapsedEventArgs e)
         {
-            bool Disposed = false;
-          
-            List<VW_MOD_POZO> ListModelos = new List<VW_MOD_POZO>();
-            if (Local)
-            {
-                Disposed = ModeloProsper.Modelo.Dispose();
-                ListModelos = ModModel.GetList();
-            }
-            else
-            {
-
-                Disposed = Server.Dispose();
-                var JsonModelos = Server.GetList(1);
-                foreach (var vwModPozo in JsonModelos)
-                {
-                    ListModelos.Add(JsonConvert.DeserializeObject<VW_MOD_POZO>(vwModPozo));
-
-                }
-                
-            }
-
-            
+            bool Disposed = false;       
+                                   
             try
             {
-                
+                              
+                                
 
-                
+                List<VW_MOD_POZO> ListModelos = new List<VW_MOD_POZO>();
+                if (Local)
+                {
+                    Disposed = ModeloProsper.Modelo.Dispose();
+                    ListModelos = ModModel.GetList();
+                }
+                else
+                {
+
+                    Disposed = Server.Dispose();
+                    var JsonModelos = Server.GetList(1);
+                    foreach (var vwModPozo in JsonModelos)
+                    {
+                        ListModelos.Add(JsonConvert.DeserializeObject<VW_MOD_POZO>(vwModPozo));
+
+                    }
+
+
+                    //if (IncConds > 6)
+                    //{
+                    //    IncConds = 0;
+                    //    Task.Run(()=>{
+                    //        try
+                    //        {
+                    //            var result = Server.Condiciones();
+                    //        }
+                    //        catch(Exception)
+                    //        {
+                    //            throw;
+                    //        }
+                            
+                    //    });
+                    //}
+
+                }
 
                 foreach (var mod in ListModelos)
                 {
@@ -181,23 +205,13 @@ namespace MonitorCore
                         if (Local)
                         {
                             LTasks.Add(mod.IDMODPOZO, new Task(() => ExecLocal(db, mod,ModeMessage)));
-                            //if (mod.ESTABILIDAD > 0)
-                            //{
-                            //    LTasks.Add("EST_" + mod.IDMODPOZO, new Task(() =>
-                            //    {
-
-
-                            //    }));
-                            //}
+                           
 
                         }
                         else
                         {
                             LTasks.Add(mod.IDMODPOZO, new Task(() => ExecRemote(db, mod, Server,ModeMessage)));
-                            //if (mod.ESTABILIDAD > 0)
-                            //{
-                            //    LTasks.Add("EST_" + mod.IDMODPOZO, new Task(() => { Server.Estabilidad(mod.IDMODPOZO); }));
-                            //}
+                            
 
                         }
                             
@@ -207,14 +221,14 @@ namespace MonitorCore
 
 
                     }
-                    if (mod.ESTATUS == 1)
-                    {
-                        //cola++;
-                    }
-                    if (mod.ESTATUS == 2)
-                    {
-                        // proceso++;
-                    }
+                    //if (mod.ESTATUS == 1)
+                    //{
+                    //    //cola++;
+                    //}
+                    //if (mod.ESTATUS == 2)
+                    //{
+                    //    // proceso++;
+                    //}
                 }
                 var tmp_tasks = LTasks.Keys.ToArray();
 
@@ -243,13 +257,27 @@ namespace MonitorCore
             }
             catch(Exception ex)
             {
-                
-                   WriteEventLogEntry(System.Diagnostics.EventLogEntryType.Error, 1, ex.Message,ModeMessage);
+                if (ModeMessage == Modo.defaults)
+                {
+                    throw new Exception(ex.Message);
+                }
+                else
+                {
+                    WriteEventLogEntry(System.Diagnostics.EventLogEntryType.Error, 1, ex.Message, ModeMessage);
+                }
                 
             }
             
         }
        
+        /// <summary>
+        /// Ejecuta los procesos de la cola en modo remoto
+        /// </summary>
+        /// <param name="db">Instancia de la Base de Datos</param>
+        /// <param name="mod_pozo">Modelo del Pozo</param>
+        /// <param name="server">Interface del servidor</param>
+        /// <param name="MError">Tipo de mensaje al desplegar los errores</param>
+        /// <returns></returns>
         private static bool ExecRemote(Entities_ModeloCI db, VW_MOD_POZO mod_pozo, Interfaces.IModelos server,Modo MError)
         {
             try
@@ -269,10 +297,7 @@ namespace MonitorCore
                     default:
                         result = server.Execute(mod_pozo.IDMODPOZO, null);
 
-                        if (result && mod_pozo.ESTABILIDAD > 0)
-                        {
-                            server.Estabilidad(mod_pozo.IDMODPOZO);
-                        }
+                       
                         break;
                 }
 
@@ -371,14 +396,7 @@ namespace MonitorCore
 
                         response = modelo.Create();
 
-                        if (response && mod_pozo.ESTABILIDAD > 0)
-                        {
-                            var Configuracion = (from config in db.CONFIGURACION where config.IDMODPOZO == mod_pozo.IDMODPOZO && config.Fecha == (db.CONFIGURACION.Where(w => w.IDMODPOZO == mod_pozo.IDMODPOZO && config.ESTATUS == 1).Max(m => m.Fecha)) select config).SingleOrDefault();
-                            ModeloProsper.Estabilidad estabilidad = new ModeloProsper.Estabilidad(Configuracion);
-                            estabilidad.Execute();
-                            estabilidad.Save();
-
-                        }
+                        
                         break;
 
                 }
@@ -433,20 +451,37 @@ namespace MonitorCore
             }
             catch(Exception ex)
             {
-                throw new Exception(ex.Message);
-                //Error = true;
-                //if(ex.InnerException != null) return new List<string>() { ex.InnerException.Message};
-                //else return new List<string>() { ex.Message };
 
-                ////if (ModeMessage == Modo.service)
-                ////    throw;
-                ////else
-                ////{
-                ////    throw new Exception(ex.Message);
-                ////}
+                if(ex.InnerException != null)
+                {
+                    throw new Exception(ex.InnerException.Message);
+                }
+                else
+                    throw new Exception(ex.Message);
+              
 
             }
             
+        }
+
+        public void RequestConds(object sender, ElapsedEventArgs e)
+        {
+            try
+            {
+                var result = Server.Condiciones();
+            }
+            catch (Exception ex)
+            {
+                if (ModeMessage == Modo.defaults)
+                {
+                    throw new Exception(ex.Message);
+                }
+                else
+                {
+                    throw;// WriteEventLogEntry(System.Diagnostics.EventLogEntryType.Error, 3, ex.Message, ModeMessage);
+                }
+
+            }
         }
         public static  bool Test(string host)
         {
@@ -540,8 +575,7 @@ namespace MonitorCore
         public enum Modo
         {
             service,
-            console,
-            window,
+            console,          
             defaults
 
         }

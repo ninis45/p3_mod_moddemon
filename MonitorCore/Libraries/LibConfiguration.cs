@@ -41,9 +41,14 @@ namespace MonitorCore.Libraries
         {
             this.Local = local;
             this.UserBd = userBd;
-            this.PassBd = passBd;
+           
             this.UrlBd = urlBd;
             this.CatalogBd = catalogBd;
+            if(passBd!=null && passBd != "")
+            {
+                this.PassBd = passBd;
+            }
+            
 
         }
         public bool Save()
@@ -120,7 +125,7 @@ namespace MonitorCore.Libraries
             get
             {
 
-                return Utf8Encode("metadata=res://*/ModeloCI.csdl|res://*/ModeloCI.ssdl|res://*/ModeloCI.msl;provider=System.Data.SqlClient;provider connection string=\"data source=" + UrlBd + ";initial catalog=CI;persist security info=True;user id=" + UserBd + ";password=" + PassBd + ";MultipleActiveResultSets=True;App=EntityFramework\"");
+                return Utf8Encode("metadata=res://*/ModeloCI.csdl|res://*/ModeloCI.ssdl|res://*/ModeloCI.msl;provider=System.Data.SqlClient;provider connection string=\"data source=" + UrlBd + ";initial catalog="+CatalogBd+";persist security info=True;user id=" + UserBd + ";password=" + PassBd + ";MultipleActiveResultSets=True;App=EntityFramework\"");
             }
         }
         public static string Utf8Encode(string str)

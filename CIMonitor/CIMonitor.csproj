@@ -70,7 +70,7 @@
     </Reference>
     <Reference Include="MonitorCore, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\MonitorCore\bin\Debug\MonitorCore.dll</HintPath>
+      <HintPath>..\MonitorCore\bin\Release\MonitorCore.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration.Install" />
@@ -103,7 +103,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="CIMonitor_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

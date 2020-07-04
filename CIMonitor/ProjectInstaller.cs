@@ -15,18 +15,17 @@ namespace CIMonitor
         public ProjectInstaller()
         {
             InitializeComponent();
-            //ServiceProcessInstaller processInstaller = new ServiceProcessInstaller();
-            //processInstaller.Account = System.ServiceProcess.ServiceAccount.User;
-            //processInstaller.Username = null;
-            //processInstaller.Password = null;
 
-            //Installers.Add(processInstaller);
+
+            
         }
 
         private void serviceInstaller1_AfterInstall(object sender, InstallEventArgs e)
         {
-            
-             new ServiceController(serviceInstaller1.ServiceName).Start();
+
+           
+            //new ServiceController(serviceInstaller1.ServiceName).Start();
+
         }
     }
 }

@@ -39,8 +39,8 @@
             // 
             // serviceInstaller1
             // 
-            this.serviceInstaller1.Description = "Servicio para monitoreo de modelo de pozos";
-            this.serviceInstaller1.DisplayName = "Monitor CI Pozos";
+            this.serviceInstaller1.Description = "Monitor para modelo de pozos";
+            this.serviceInstaller1.DisplayName = "Monitor CI";
             this.serviceInstaller1.ServiceName = "CIMonitor";
             this.serviceInstaller1.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             this.serviceInstaller1.AfterInstall += new System.Configuration.Install.InstallEventHandler(this.serviceInstaller1_AfterInstall);
@@ -50,6 +50,7 @@
             this.Installers.AddRange(new System.Configuration.Install.Installer[] {
             this.serviceProcessInstaller1,
             this.serviceInstaller1});
+            this.AfterInstall += new System.Configuration.Install.InstallEventHandler(this.serviceInstaller1_AfterInstall);
 
         }
 
