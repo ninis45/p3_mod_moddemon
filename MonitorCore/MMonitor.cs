@@ -29,10 +29,12 @@ namespace MonitorCore
         public Modo ModeMessage = Modo.defaults;
        
        
+       
 
 
         
-
+        public MMonitor(){
+        }
         public MMonitor(bool Local, string hosts)
         {
             this.Local = Local;
@@ -180,24 +182,10 @@ namespace MonitorCore
                     }
 
 
-                    //if (IncConds > 6)
-                    //{
-                    //    IncConds = 0;
-                    //    Task.Run(()=>{
-                    //        try
-                    //        {
-                    //            var result = Server.Condiciones();
-                    //        }
-                    //        catch(Exception)
-                    //        {
-                    //            throw;
-                    //        }
-                            
-                    //    });
-                    //}
+                   
 
                 }
-
+               
                 foreach (var mod in ListModelos)
                 {
                     if (LTasks.ContainsKey(mod.IDMODPOZO) == false)
@@ -464,7 +452,31 @@ namespace MonitorCore
             
         }
 
+        /// <summary>
+        /// Solicitar condiciones de operacion con Timer
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void RequestConds(object sender, ElapsedEventArgs e)
+        {
+            try
+            {
+                var result = Server.Condiciones();
+            }
+            catch (Exception ex)
+            {
+                if (ModeMessage == Modo.defaults)
+                {
+                    throw new Exception(ex.Message);
+                }
+                else
+                {
+                    throw;// WriteEventLogEntry(System.Diagnostics.EventLogEntryType.Error, 3, ex.Message, ModeMessage);
+                }
+
+            }
+        }
+        public void RequestConds()
         {
             try
             {

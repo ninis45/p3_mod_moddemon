@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MonitorWin.Forms;
@@ -16,8 +17,16 @@ namespace MonitorWin
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            
-            Application.Run(new FormConfiguracion());
+
+            bool createdNew;
+            var  m_Mutex = new Mutex(true, "MUTEXMONITORCI", out createdNew);
+
+            if (createdNew == true)
+                Application.Run(new FormConfiguracion());
+            else {
+
+                MessageBox.Show("Ya existe una aplicacion en ejecución", "Monitor CI", MessageBoxButtons.OK, MessageBoxIcon.Stop); ;
+            }
             
         }
     }

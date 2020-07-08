@@ -57,6 +57,7 @@
             this.btnStop = new System.Windows.Forms.Button();
             this.btnStart = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.contextMenuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -241,6 +242,7 @@
             // rdbLocal
             // 
             this.rdbLocal.AutoSize = true;
+            this.rdbLocal.Enabled = false;
             this.rdbLocal.Location = new System.Drawing.Point(11, 24);
             this.rdbLocal.Margin = new System.Windows.Forms.Padding(2);
             this.rdbLocal.Name = "rdbLocal";
@@ -389,5 +391,6 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox txtBd;
         private System.Windows.Forms.Button btnClear;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }

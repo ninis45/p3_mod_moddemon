@@ -15,6 +15,8 @@ Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Instalador Servicio CI", "I
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Instalador Configurador CI", "Instalador Configurador CI\Instalador Configurador CI.vdproj", "{BE43054A-A294-48B2-8162-A9DE82A898E1}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Instalador Monitor CI", "Instalador Monitor CI\Instalador Monitor CI.vdproj", "{F7048D3D-AE21-419B-87F0-7C7F278F5B8E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,8 @@ Global
 		{05B67AF4-EC2D-4BCC-9320-BE7DEAB24904}.Release|Any CPU.ActiveCfg = Release
 		{BE43054A-A294-48B2-8162-A9DE82A898E1}.Debug|Any CPU.ActiveCfg = Debug
 		{BE43054A-A294-48B2-8162-A9DE82A898E1}.Release|Any CPU.ActiveCfg = Release
+		{F7048D3D-AE21-419B-87F0-7C7F278F5B8E}.Debug|Any CPU.ActiveCfg = Debug
+		{F7048D3D-AE21-419B-87F0-7C7F278F5B8E}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

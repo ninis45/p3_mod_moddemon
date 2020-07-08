@@ -20,6 +20,10 @@ namespace MonitorWin.Forms
 {
     public partial class FormConfiguracion : Form
     {
+        private const string MutexName = "MUTEX_SINGLEINSTANCEANDNAMEDPIPE";
+        private bool _firstApplicationInstance;
+        private Mutex _mutexApplication;
+
         private string NameProcess = "CIMonitor";
         private Process[] ListProcess;        
         private MonitorCore.Libraries.LibConfiguration libConfig;
@@ -31,16 +35,21 @@ namespace MonitorWin.Forms
         private bool ForcedClose;
         private CancellationTokenSource cancellationToken;
 
-        private System.Timers.Timer timerMonitor;
+        private System.Timers.Timer TMonitor;
+        private MMonitor MonitorCore;
 
         public FormConfiguracion()
         {
             InitializeComponent();
             Control.CheckForIllegalCrossThreadCalls = false;
 
+            
+
+
+
             libConfig = new MonitorCore.Libraries.LibConfiguration();
 
-            //TimerMonitor = new System.Timers.Timer(100) { AutoReset = true };
+            TMonitor = new System.Timers.Timer(40000) { AutoReset = true };
             //TimerMonitor.Elapsed += RequestMonitor;
             RefreshInfo();
 
@@ -134,7 +143,7 @@ namespace MonitorWin.Forms
 
                     }, CancellationToken.None, TaskContinuationOptions.None, TaskScheduler.FromCurrentSynchronizationContext());
 
-                    if (intentos > 5)
+                    if (intentos > 3)
                     {
                         intentosConds++;
                         intentos = 0;
@@ -261,8 +270,14 @@ namespace MonitorWin.Forms
 
             txtHost.Text = libConfig.Host;
             rdbLocal.Checked = libConfig.Local;//ConfigurationManager.AppSettings["host"];
+            //var p = Process.GetCurrentProcess().ProcessName;
+
+            var p = Process.GetProcesses();
             ListProcess = Process.GetProcessesByName(NameProcess);
-           
+
+            MonitorCore = new MMonitor(libConfig.Local, libConfig.Host);
+
+            TMonitor.Elapsed += MonitorCore.Process;
 
             if (ListProcess.Count() > 0)
             {
@@ -270,15 +285,15 @@ namespace MonitorWin.Forms
                 contextMenuStrip1.Items[2].Enabled = false;
                 contextMenuStrip1.Items[3].Enabled = true;
                 btnStart.Enabled = false;
-               btnStop.Enabled = true;
-              
+                btnStop.Enabled = true;
+               
                 btnRestart.Enabled = true;
                 cancellationToken = new CancellationTokenSource();
-               txtArea.Text = "Estatus: Iniciado \r\n";
+                txtArea.Text = "Estatus: Iniciado \r\n";
 
-
+                TMonitor.Start();
                
-                var d = RequestMonitor(new TimeSpan(0, 0, 0, 10,0), cancellationToken.Token, new MMonitor(libConfig.Local, libConfig.Host), txtArea);
+                var d = RequestMonitor(new TimeSpan(0, 0, 0, 20,0), cancellationToken.Token, new MMonitor(libConfig.Local, libConfig.Host), txtArea);
             }
             else
             {
@@ -292,8 +307,14 @@ namespace MonitorWin.Forms
                 //txtHost.ReadOnly = false;
                 txtArea.Text = "Estatus: Detenido \r\n";
                 //timerMonitor.Stop();
-                if(cancellationToken != null) cancellationToken.Cancel();
+
+                TMonitor.Stop();
+
+                if (cancellationToken != null) cancellationToken.Cancel();
             }
+
+
+            
         }
 
         private void configuracionesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -480,5 +501,7 @@ namespace MonitorWin.Forms
         {
             txtArea.Clear();
         }
+
+        
     }
 }
